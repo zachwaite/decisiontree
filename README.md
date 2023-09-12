@@ -1,6 +1,14 @@
 # Decision Trees
 
-Example:
+Installation:
+
+```bash
+git clone https://github.com/zachwaite/decisiontree
+cd decisiontree
+python3 -m pip install .
+```
+
+Example script (e.g. save as `demotree.py`):
 
 ```python
 from decisiontree.decisiontree import *
@@ -56,6 +64,12 @@ tree = DecisionTree(
     ),
 )
 tree.write_jpg('demo.jpg')
+```
+
+Then run
+
+```bash
+python3 demotree.py
 ```
 
 Output:
