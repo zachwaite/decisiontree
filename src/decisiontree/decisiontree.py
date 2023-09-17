@@ -47,7 +47,7 @@ class Chance(BaseModel):
         match self.node:
             case DecisionNode():
                 return max(
-                    [decision.expected_value for decision in self.node.decisions]
+                    [round(decision.expected_value, 2) for decision in self.node.decisions]
                 )
             case OutcomeNode():
                 return self.node.value * self.probability
@@ -61,7 +61,7 @@ class Chance(BaseModel):
         if parent is None:
             this = []
         else:
-            this = ["    " + parent.render() + " --> " + f"|{self.probability}| " + self.render()]
+            this = ["    " + parent.render() + " --> " + f"|{round(self.probability, 3)}| " + self.render()]
         children = self.node.render_edge(self)
         return this + children
 
@@ -73,7 +73,7 @@ class ChanceNode(BaseModel):
 
     @property
     def expected_value(self) -> float:
-        return sum([chance.expected_value for chance in self.chances])
+        return round(sum([chance.expected_value for chance in self.chances]), 2)
 
     def render(self) -> str:
         return f"{self.id}(( ))"
@@ -148,4 +148,15 @@ class DecisionTree(BaseModel):
         outbytes = requests.get("https://mermaid.ink/img/" + base64_string).content
         with open(outfile, 'wb') as f:
             f.write(outbytes)
+
+    def html_img_tag(self):
+        graph = self.render_tree()
+        graphbytes = graph.encode("ascii")
+        base64_bytes = base64.b64encode(graphbytes)
+        base64_string = base64_bytes.decode("ascii")
+        outbytes = requests.get("https://mermaid.ink/img/" + base64_string).content
+        base64_outbytes = base64.b64encode(outbytes)
+        base64_string = base64_outbytes.decode("ascii")
+        return f"<img src='data:image/jpeg;base64,{base64_string}' alt='tree' style='width:100%' />"
+
 
